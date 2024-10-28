@@ -21,6 +21,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 import torch
 from torch import Tensor
 from torch.utils.data import DataLoader
+from lightning import LightningDataModule
 
 def standard_scale(x: list[Tensor]) -> StandardScaler:
     ss = StandardScaler().fit(
@@ -107,3 +108,61 @@ class ReadyBatch(NamedTuple):
     labels: Tensor
     label_lengths: Tensor
 
+class DataModule(LightningDataModule):
+    def __init__(
+        self,
+        formatted_dataset: FormattedDataset,
+        train_indices: list[int] | None = None,
+        test_indices: list[int] = [],
+        val_indices: list[int] = [],
+        batch_size: int = 1
+        ):
+        super().__init__()
+
+        self.formatted_dataset = formatted_dataset
+        self.input_maxlen = maxlen(formatted_dataset.inputs)
+        self.label_maxlen = maxlen(formatted_dataset.labels)
+
+        self.train_indices = (
+            torch.arange(len(self.formatted_dataset))
+            if train_indices is None else
+            torch.tensor(train_indices)
+        )
+        self.test_indices = torch.tensor(test_indices, dtype=self.train_indices.dtype)
+        self.val_indices = torch.tensor(val_indices, dtype=self.train_indices.dtype)
+        self.batch_size = batch_size
+
+    def collate_fn(self, indices: Tensor):
+        inputs, input_lengths = pad_data(
+            self.formatted_dataset.inputs[indices],
+            maxlen=self.input_maxlen
+        )
+        labels, label_lengths = pad_data(
+            self.formatted_dataset.labels[indices],
+            maxlen=self.label_maxlen
+        )
+        return ReadyDataset(
+            inputs=inputs,
+            input_lengths=input_lengths,
+            standard_scaler=self.formatted_dataset.standard_scaler,
+            labels=labels,
+            label_lengths=label_lengths,
+            label_encoder=self.formatted_dataset.label_encoder
+        )
+
+    def train_dataloader(self):
+        return DataLoader(
+            self.train_indices, batch_size=self.batch_size,
+            collate_fn=self.collate_fn,
+            shuffle=True, drop_last=True
+        )
+    def test_dataloader(self):
+        return DataLoader(
+            self.test_indices, batch_size=self.batch_size, 
+            collate_fn=self.collate_fn
+        )
+    def val_dataloader(self):
+        return DataLoader(
+            self.val_indices, batch_size=self.batch_size,
+            collate_fn=self.collate_fn
+        )
