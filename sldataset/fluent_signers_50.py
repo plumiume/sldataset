@@ -110,13 +110,20 @@ class FS50DatasetAnnotations:
     people: list[int]
     valiations: list[int]
     def split(self, train_size: float = 0.8, test_size: float = 0.1, val_size: float = 0.1):
+
         num_people = len(set(self.people))
-        order = torch.rand((num_people,)).argsort(0) / num_people
+        order = torch.rand((num_people,)).argsort(0)
+
+        train_pids = order[:(cursor:=int(num_people * train_size))]
+        test_pids = order[cursor: (cursor:=cursor+int(num_people * test_size))]
+        val_pids = order[cursor:]
+
         return (
-            order[order < (r := train_size)],
-            order[r <= order < (r := r + test_size)],
-            order[r <= order < (r + val_size)]
+            torch.stack([self.people == pid for pid in train_pids]).all(0),
+            torch.stack([self.people == pid for pid in test_pids]).all(0),
+            torch.stack([self.people == pid for pid in val_pids]).all(0)
         )
+
 
 @dataclass
 class FS50FormattedDataest(FS50DatasetAnnotations, sldataset.FormattedDataset):
