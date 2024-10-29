@@ -18,6 +18,7 @@ setup(
     name='sldataset',
     version='0.0.0',
     author='plumiume.com',
+    license='LICENSE.txt',
     install_requires=[
         'scikit-learn',
         'torch'
