@@ -96,8 +96,7 @@ def main():
         formatted_dataset = FS50FormattedDataest(
             raw_dataset.inputs, standard_scaler,
             labels, label_encoder,
-            
-            
+            people, valiations
         )
 
         if args.intermediate is not None:
