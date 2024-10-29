@@ -92,7 +92,6 @@ class FormattedDataset(_SizedAndIterableDataset):
     standard_scaler: StandardScaler
     labels: list[Tensor]
     label_encoder: LabelEncoder
-    annotations: dict[str, list]
 
 @dataclass
 class ReadyDataset(_SizedAndIterableDataset):
@@ -102,7 +101,6 @@ class ReadyDataset(_SizedAndIterableDataset):
     labels: Tensor
     label_lengths: Tensor
     label_encoder: LabelEncoder
-    annotations: dict[str, list]
 
 class ReadyBatch(NamedTuple):
     inputs: Tensor
