@@ -31,9 +31,9 @@ def standard_scale(x: list[Tensor]) -> StandardScaler:
         x[idx] = torch.from_numpy(ss.transform(x[idx]))
     return ss
 
-def label_encode(y: list[list[str]], clss: list[str] | None = None) -> tuple[list[Tensor], LabelEncoder]:
+def label_encode(y: list[list[str]], clss: list[str] | None = None, blank: int = 0) -> tuple[list[Tensor], LabelEncoder]:
     le = LabelEncoder().fit(
-        list(set(chain.from_iterable(y)))
+        [blank] + list(set(chain.from_iterable(y)))
         if clss is None else
         clss 
     )

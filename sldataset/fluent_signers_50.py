@@ -13,17 +13,18 @@ from torch import Tensor
 
 import sldataset
 
-def main():
+class Namespace:
+    module: str
+    root: Path
+    target: str
+    dst: Path
+    pattern: str
+    annotation: str | None
 
-    parser = argparse.ArgumentParser()
-    class Namespace:
-        root: Path = parser.add_argument('root', type=Path)
-        target: str = parser.add_argument('target')
-        annotation: str = parser.add_argument('annotation')
-        intermediate: Path | None = parser.add_argument('-i', '--intermediate', default=None, type=Path)
-        pattern: str = parser.add_argument('-p', '--pattern', default='**/*')
-    args: Namespace = parser.parse_args()
+def main(args: Namespace):
 
+    if args.annotation is None:
+        raise ValueError
 
     if not args.root.exists():
         raise FileNotFoundError(f'root directory ({args.root}) is not exists')
