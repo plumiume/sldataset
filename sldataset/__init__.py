@@ -166,3 +166,4 @@ class DataModule(LightningDataModule):
             self.val_indices, batch_size=self.batch_size,
             collate_fn=self.collate_fn
         )
+

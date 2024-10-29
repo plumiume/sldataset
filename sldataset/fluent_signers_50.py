@@ -93,13 +93,11 @@ def main():
             list(chain.from_iterable(sentence_map.values()))
         )
 
-        formatted_dataset = sldataset.FormattedDataset(
+        formatted_dataset = FS50FormattedDataest(
             raw_dataset.inputs, standard_scaler,
             labels, label_encoder,
-            {
-                'people': people,
-                'valiations': valiations
-            }
+            
+            
         )
 
         if args.intermediate is not None:
@@ -121,11 +119,11 @@ class FS50DatasetAnnotations:
         )
 
 @dataclass
-class FS50FormattedDataest(sldataset.FormattedDataset, FS50DatasetAnnotations):
+class FS50FormattedDataest(FS50DatasetAnnotations, sldataset.FormattedDataset):
     pass
 
 @dataclass
-class FS50ReadyDataset(sldataset.ReadyDataset, FS50DatasetAnnotations):
+class FS50ReadyDataset(FS50DatasetAnnotations, sldataset.ReadyDataset):
     pass
 
 if __name__ == '__main__':
