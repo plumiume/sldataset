@@ -107,6 +107,8 @@ class ReadyBatch(NamedTuple):
     input_lengths: Tensor
     labels: Tensor
     label_lengths: Tensor
+    def to(self, dtype: torch.dtype | str | None = None, device: torch.device | int | str | None = None, non_blocking: bool = False, copy: bool = False):
+        return ReadyBatch(*(field.to(dtype, device, non_blocking, copy) for field in self))
 
 class DataModule(LightningDataModule):
     def __init__(
@@ -142,7 +144,7 @@ class DataModule(LightningDataModule):
             maxlen=self.label_maxlen
         )
         return ReadyBatch(
-            inputs=inputs,
+            inputs=inputs.to(self),
             input_lengths=input_lengths,
             labels=labels,
             label_lengths=label_lengths,
