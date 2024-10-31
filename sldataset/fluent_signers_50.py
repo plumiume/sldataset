@@ -108,6 +108,7 @@ class FS50DatasetAnnotations:
     valiations: list[int]
     def split(self, train_size: float = 0.8, test_size: float = 0.1, val_size: float = 0.1):
 
+        people = torch.tensor(self.people)
         num_people = len(set(self.people))
         order = torch.rand((num_people,)).argsort(0)
 
@@ -116,9 +117,9 @@ class FS50DatasetAnnotations:
         val_pids = order[cursor:]
 
         return (
-            torch.stack([self.people == pid for pid in train_pids]).all(0),
-            torch.stack([self.people == pid for pid in test_pids]).all(0),
-            torch.stack([self.people == pid for pid in val_pids]).all(0)
+            torch.stack([people == pid for pid in train_pids]).all(0),
+            torch.stack([people == pid for pid in test_pids]).all(0),
+            torch.stack([people == pid for pid in val_pids]).all(0)
         )
 
 
