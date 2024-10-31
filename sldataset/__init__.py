@@ -144,11 +144,25 @@ class DataModule(LightningDataModule):
             maxlen=self.label_maxlen
         )
         return ReadyBatch(
-            inputs=inputs.to(self),
+            inputs=inputs,
             input_lengths=input_lengths,
             labels=labels,
             label_lengths=label_lengths,
         )
+
+    def transfer_batch_to_device(self, batch, device, dataloader_idx):
+        print(batch.__class__)
+        if isinstance(batch, ReadyBatch):
+            return batch.to(device=device)
+        return super().transfer_batch_to_device(batch, device, dataloader_idx)
+
+    def on_before_batch_transfer(self, batch, dataloader_idx):
+        print(batch.__class__)
+        return super().on_before_batch_transfer(batch, dataloader_idx)
+
+    def on_after_batch_transfer(self, batch, dataloader_idx):
+        print(batch.__class__)
+        return super().on_after_batch_transfer(batch, dataloader_idx)
 
     def train_dataloader(self):
         return DataLoader(
