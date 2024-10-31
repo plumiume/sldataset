@@ -134,20 +134,18 @@ class DataModule(LightningDataModule):
 
     def collate_fn(self, indices: Tensor):
         inputs, input_lengths = pad_data(
-            self.formatted_dataset.inputs[indices],
+            [self.formatted_dataset.inputs[idx] for idx in indices],
             maxlen=self.input_maxlen
         )
         labels, label_lengths = pad_data(
-            self.formatted_dataset.labels[indices],
+            [self.formatted_dataset.labels[idx] for idx in indices],
             maxlen=self.label_maxlen
         )
-        return ReadyDataset(
+        return ReadyBatch(
             inputs=inputs,
             input_lengths=input_lengths,
-            standard_scaler=self.formatted_dataset.standard_scaler,
             labels=labels,
             label_lengths=label_lengths,
-            label_encoder=self.formatted_dataset.label_encoder
         )
 
     def train_dataloader(self):
