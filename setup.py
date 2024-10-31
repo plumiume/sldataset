@@ -22,5 +22,10 @@ setup(
     install_requires=[
         'scikit-learn',
         'torch'
-    ]
+    ],
+    entry_points = {
+        'console_script': [
+            'sldataset = sldataset.__main__'
+        ]
+    }
 )

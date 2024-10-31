@@ -100,10 +100,7 @@ def main(args: Namespace):
             people, valiations
         )
 
-        if args.intermediate is not None:
-            formatted_dataset.save(args.intermediate)
-
-        return formatted_dataset
+        formatted_dataset.save(args.dst)
 
 @dataclass
 class FS50DatasetAnnotations:
