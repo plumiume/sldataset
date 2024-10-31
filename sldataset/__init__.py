@@ -56,7 +56,7 @@ def pad_data(x: list[Tensor], maxlen: int | None = None, dim: int = 0, padding_v
     x = torch.stack([
         torch.nn.functional.pad(
             input=xi,
-            pad=(0, max(0, maxlen - xleni)) + (0, 0) * (xi.ndim - dim - 1),
+            pad=(0, 0) * (xi.ndim - dim - 1) + (0, max(0, maxlen - xleni)),
             mode='constant',
             value=padding_value
         )
