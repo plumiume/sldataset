@@ -165,19 +165,18 @@ class DataModule(LightningDataModule):
         return super().on_after_batch_transfer(batch, dataloader_idx)
 
     def train_dataloader(self):
-        return DataLoader(
+        return DataLoader[ReadyBatch](
             self.train_indices, batch_size=self.batch_size,
             collate_fn=self.collate_fn,
             shuffle=True, drop_last=True
         )
     def test_dataloader(self):
-        return DataLoader(
+        return DataLoader[ReadyBatch](
             self.test_indices, batch_size=self.batch_size, 
             collate_fn=self.collate_fn
         )
     def val_dataloader(self):
-        return DataLoader(
+        return DataLoader[ReadyBatch](
             self.val_indices, batch_size=self.batch_size,
             collate_fn=self.collate_fn
         )
-
