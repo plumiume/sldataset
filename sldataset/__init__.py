@@ -114,9 +114,9 @@ class DataModule(LightningDataModule):
     def __init__(
         self,
         formatted_dataset: FormattedDataset,
-        train_indices: list[int] | None = None,
-        test_indices: list[int] = [],
-        val_indices: list[int] = [],
+        train_indices: list[int] | Tensor | None = None,
+        test_indices: list[int] | Tensor = [],
+        val_indices: list[int] | Tensor = [],
         batch_size: int = 1
         ):
         super().__init__()
@@ -128,10 +128,20 @@ class DataModule(LightningDataModule):
         self.train_indices = (
             torch.arange(len(self.formatted_dataset))
             if train_indices is None else
+            train_indices
+            if isinstance(train_indices, Tensor) else
             torch.tensor(train_indices)
         )
-        self.test_indices = torch.tensor(test_indices, dtype=self.train_indices.dtype)
-        self.val_indices = torch.tensor(val_indices, dtype=self.train_indices.dtype)
+        self.test_indices = (
+            test_indices
+            if isinstance(test_indices, Tensor) else
+            torch.tensor(test_indices, dtype=self.train_indices.dtype)
+        )
+        self.val_indices = (
+            val_indices
+            if isinstance(val_indices, Tensor) else
+            torch.tensor(val_indices, dtype=self.train_indices.dtype)
+        )
         self.batch_size = batch_size
 
     def collate_fn(self, indices: Tensor):
