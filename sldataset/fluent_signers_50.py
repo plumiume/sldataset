@@ -62,7 +62,7 @@ def main(args: Namespace):
                 return
 
             person_id, sentence_id, valiation = parse_result.fixed
-            
+
             match file.suffix:
                 case '.pt':
                     x: Tensor = torch.load(file)
@@ -117,19 +117,19 @@ class FS50DatasetAnnotations:
 
         return (
             torch.tensor([
-                idx for idx in arange
-                if order[self.people[idx]] < train_test_threashould
+                idx for idx in self.people
+                if order[idx] < train_test_threashould
             ]),
             torch.tensor([
                 idx for idx in arange
-                if train_test_threashould <= order[self.people[idx]] < test_val_threshould
+                if train_test_threashould <= order[idx] < test_val_threshould
             ]),
             torch.tensor([
                 idx for idx in arange
-                if test_val_threshould <= order[self.people[idx]]
+                if test_val_threshould <= order[idx]
             ])
         )
-        
+
 
 @dataclass
 class FS50FormattedDataest(FS50DatasetAnnotations, sldataset.FormattedDataset):
