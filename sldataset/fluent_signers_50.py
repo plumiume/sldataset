@@ -106,22 +106,30 @@ def main(args: Namespace):
 class FS50DatasetAnnotations:
     people: list[int]
     valiations: list[int]
-    def split(self, train_size: float = 0.8, test_size: float = 0.1, val_size: float = 0.1):
-
-        people = torch.tensor(self.people)
+    def split(
+        self,
+        train_test_threashould: float = 0.8,
+        test_val_threshould: float = 0.9
+    ):
         num_people = len(set(self.people))
-        order = torch.rand((num_people,)).argsort(0)
-
-        train_pids = order[:(cursor:=int(num_people * train_size))]
-        test_pids = order[cursor: (cursor:=cursor+int(num_people * test_size))]
-        val_pids = order[cursor:]
+        order = torch.rand([num_people]).argsort() / num_people
+        arange = torch.arange(num_people)
 
         return (
-            torch.stack([people == pid for pid in train_pids]).all(0),
-            torch.stack([people == pid for pid in test_pids]).all(0),
-            torch.stack([people == pid for pid in val_pids]).all(0)
+            torch.tensor([
+                idx for idx in arange
+                if order[self.people[idx]] < train_test_threashould
+            ]),
+            torch.tensor([
+                idx for idx in arange
+                if train_test_threashould <= order[self.people[idx] < test_val_threshould]
+            ]),
+            torch.tensor([
+                idx for idx in arange
+                if test_val_threshould <= order[self.people[idx]]
+            ])
         )
-
+        
 
 @dataclass
 class FS50FormattedDataest(FS50DatasetAnnotations, sldataset.FormattedDataset):
