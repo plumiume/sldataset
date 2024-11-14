@@ -113,21 +113,39 @@ class FS50DatasetAnnotations:
     ):
         num_people = len(set(self.people))
         order = torch.rand([num_people]).argsort() / num_people
-        arange = torch.arange(num_people)
 
         return (
             torch.tensor([
-                idx for idx in self.people
-                if order[idx] < train_test_threashould
+                p for p in self.people
+                if order[p] < train_test_threashould
             ]),
             torch.tensor([
-                idx for idx in self.people
-                if train_test_threashould <= order[idx] < test_val_threshould
+                p for p in self.people
+                if train_test_threashould <= order[p] < test_val_threshould
             ]),
             torch.tensor([
-                idx for idx in self.people
-                if test_val_threshould <= order[idx]
+                p for p in self.people
+                if test_val_threshould <= order[p]
             ])
+        )
+    def validation(
+        self,
+        num_split: int = 5
+        ):
+
+        num_people = len(set(self.people))
+        group = torch.rand([num_people]).argsort() % num_split
+
+        return (
+            (
+                torch.tensor([
+                    p for p in self.people if group[p] != idx
+                ]),
+                torch.tensor([
+                    p for p in self.people if group[p] == idx
+                ])
+            )
+            for idx in torch.arange(num_split)
         )
 
 
