@@ -116,15 +116,15 @@ class FS50DatasetAnnotations:
 
         return (
             torch.tensor([
-                p for p in self.people
+                i for i, p in enumerate(self.people)
                 if order[p] < train_test_threashould
             ]),
             torch.tensor([
-                p for p in self.people
+                i for i, p in enumerate(self.people)
                 if train_test_threashould <= order[p] < test_val_threshould
             ]),
             torch.tensor([
-                p for p in self.people
+                i for i, p in enumerate(self.people)
                 if test_val_threshould <= order[p]
             ])
         )
@@ -139,10 +139,10 @@ class FS50DatasetAnnotations:
         return (
             (
                 torch.tensor([
-                    p for p in self.people if group[p] != idx
+                    i for i, p in enumerate(self.people) if group[p] != idx
                 ]),
                 torch.tensor([
-                    p for p in self.people if group[p] == idx
+                    i for i, p in enumerate(self.people) if group[p] == idx
                 ])
             )
             for idx in torch.arange(num_split)
