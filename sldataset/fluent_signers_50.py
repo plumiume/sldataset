@@ -121,11 +121,11 @@ class FS50DatasetAnnotations:
                 if order[idx] < train_test_threashould
             ]),
             torch.tensor([
-                idx for idx in arange
+                idx for idx in self.people
                 if train_test_threashould <= order[idx] < test_val_threshould
             ]),
             torch.tensor([
-                idx for idx in arange
+                idx for idx in self.people
                 if test_val_threshould <= order[idx]
             ])
         )
