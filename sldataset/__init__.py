@@ -23,6 +23,10 @@ from torch import Tensor
 from torch.utils.data import DataLoader
 from lightning import LightningDataModule
 
+def inf_to_nan(x: list[Tensor]):
+    for idx in range(len(x)):
+        x[idx] = torch.where(x == torch.inf, torch.nan, x)
+
 def standard_scale(x: list[Tensor]) -> StandardScaler:
     ss = StandardScaler().fit(
         torch.cat(x, dim=0)
