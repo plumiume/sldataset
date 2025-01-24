@@ -25,7 +25,7 @@ from lightning import LightningDataModule
 
 def inf_to_nan(x: list[Tensor]):
     for idx in range(len(x)):
-        x[idx] = torch.where(x == torch.inf, torch.nan, x)
+        x[idx] = torch.where(x[idx] == torch.inf, torch.nan, x[idx])
 
 def standard_scale(x: list[Tensor]) -> StandardScaler:
     ss = StandardScaler().fit(
@@ -96,6 +96,12 @@ class FormattedDataset(_SizedAndIterableDataset):
     standard_scaler: StandardScaler
     labels: list[Tensor]
     label_encoder: LabelEncoder
+    @property
+    def num_features(self):
+        return self.standard_scaler.n_features_in_
+    @property
+    def num_classes(self):
+        return len(self.label_encoder.classes_)
 
 @dataclass
 class ReadyDataset(_SizedAndIterableDataset):
@@ -105,6 +111,12 @@ class ReadyDataset(_SizedAndIterableDataset):
     labels: Tensor
     label_lengths: Tensor
     label_encoder: LabelEncoder
+    @property
+    def num_features(self):
+        return self.standard_scaler.n_features_in_
+    @property
+    def num_classes(self):
+        return len(self.label_encoder.classes_)
 
 class ReadyBatch(NamedTuple):
     inputs: Tensor
