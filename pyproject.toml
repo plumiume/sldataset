@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sldataset"
+version = "0.0.0"
+dynamic = ["license", "authors"]
+dependencies = [
+    "parse",
+    "scikit-learn",
+    "torch",
+    "lightning",
+]
+
+[project.scripts]
+sldataset = "sldataset.__main__:main"
+
+[tool.setuptools]
+packages = ["sldataset"]

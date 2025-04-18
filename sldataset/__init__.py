@@ -73,6 +73,7 @@ def remove_nan(x: Tensor, value: torch.NumberType = 0) -> Tensor:
     return torch.masked_fill(x, torch.isnan(x), value)
 
 class _SizedAndIterableDataset(Sized, Iterable):
+    file: str | None = None
     inputs: Sized
     def __len__(self) -> int:
         return len(self.inputs)
@@ -83,7 +84,9 @@ class _SizedAndIterableDataset(Sized, Iterable):
         pickle.dump(self, open(file, 'wb'))
     @classmethod
     def load(cls, file: str) -> Self:
-        return pickle.load(open(file, 'rb'))
+        self: Self = pickle.load(open(file, 'rb'))
+        self.file = file
+        return self
 
 @dataclass
 class RawDataset(_SizedAndIterableDataset):
