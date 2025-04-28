@@ -5,6 +5,7 @@ import csv
 from itertools import chain
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+import logging
 
 import parse
 import numpy as np
@@ -31,9 +32,12 @@ def main(args: Namespace):
     if not args.root.is_dir():
         raise FileNotFoundError(f'root ({args.root}) must be directory')
     annotation_csv = args.root / args.annotation
+    logging.info(f'annotation csv file: {annotation_csv}')
+    
     if not annotation_csv.exists():
         raise FileNotFoundError(f'annotation csv file ({annotation_csv}) is not exists')
     target_dir = args.root / args.target
+    logging.info(f'target directory: {target_dir}')
     if not target_dir.exists():
         raise FileNotFoundError(f'target directory ({target_dir}) is not exists')
 
@@ -41,6 +45,7 @@ def main(args: Namespace):
         int(record['ID']): str(record['Gloss']).split()
         for record in csv.DictReader(open(annotation_csv, encoding='utf8'))
     }
+    logging.info(f'sentence map: {sentence_map}')
 
     if target_dir.is_file():
         match target_dir.suffix:
@@ -73,6 +78,8 @@ def main(args: Namespace):
                 case _:
                     raise TypeError(f'invalid file type ({file})')
 
+            logging.info(f'loaded file: {file} ({file.suffix}), shape: {x.shape}, dtype: {x.dtype}')
+
             return x, sentence_map[sentence_id], person_id, valiation
 
         people = list[int]()
@@ -89,11 +96,17 @@ def main(args: Namespace):
             valiations.append(v)
 
         sldataset.inf_to_nan(raw_dataset.inputs)
+
+        logging.info("Starting standard scaling of raw dataset inputs.")
         standard_scaler = sldataset.standard_scale(raw_dataset.inputs)
+        logging.info("Finished standard scaling of raw dataset inputs.")
+
+        logging.info("Starting standard scaling of raw dataset inputs.")
         labels, label_encoder = sldataset.label_encode(
             raw_dataset.glosses,
             list(chain.from_iterable(sentence_map.values()))
         )
+        logging.info("Finished standard scaling of raw dataset inputs.")
 
         formatted_dataset = FS50FormattedDataest(
             raw_dataset.inputs, standard_scaler,
@@ -102,6 +115,8 @@ def main(args: Namespace):
         )
 
         formatted_dataset.save(args.dst)
+        logging.info(f'saved formatted dataset: {args.dst}')
+        return
 
 @dataclass
 class FS50DatasetAnnotations:

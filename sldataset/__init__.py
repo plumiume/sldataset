@@ -12,8 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 from itertools import chain
-from typing import Sized, Iterable, NamedTuple, Self
+from typing import Sized, Iterable, NamedTuple
+if sys.version_info.minor < 11:
+    from typing_extensions import Self
+else:
+    from typing import Self
 from dataclasses import dataclass
 import pickle
 
@@ -25,7 +30,7 @@ from lightning import LightningDataModule
 
 def inf_to_nan(x: list[Tensor]):
     for idx in range(len(x)):
-        x[idx] = torch.where(x[idx] == torch.inf, torch.nan, x[idx])
+        x[idx] = torch.where(torch.isfinite(x[idx]), x[idx], torch.nan)
 
 def standard_scale(x: list[Tensor]) -> StandardScaler:
     ss = StandardScaler().fit(
