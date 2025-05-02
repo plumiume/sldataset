@@ -14,7 +14,7 @@
 
 import sys
 from itertools import chain
-from typing import Sized, Iterable, NamedTuple
+from typing import Sized, Iterable, NamedTuple, BinaryIO
 if sys.version_info.minor < 11:
     from typing_extensions import Self
 else:
@@ -91,6 +91,11 @@ class _SizedAndIterableDataset(Sized, Iterable):
     def load(cls, file: str) -> Self:
         self: Self = pickle.load(open(file, 'rb'))
         self.file = file
+        return self
+    @classmethod
+    def load_from_stream(cls, stream: BinaryIO):
+        self: Self = pickle.load(stream)
+        self.file = None
         return self
 
 @dataclass
